@@ -24,21 +24,29 @@ function getTotalNumberOfBorrows(account, books) {
   return total;
 }
 
-
 function getBooksPossessedByAccount(account, books, authors) {
-  const { id } = account;
+  const accountId = account.id;
   const result = [];
   for (let book of books) {
     const { borrows } = book;
     const recentBorrow = borrows[0];
-    if (recentBorrow.id === id && !recentBorrow.returned) {
-      const author = authors.find(author => author.id === book.authorId);
-      const bookWithAuthor = {...book, author};
+    if (isPossessedByAccount(accountId, recentBorrow)) {
+      const bookWithAuthor = getBookWithAuthor(book, authors);
       result.push(bookWithAuthor);
     }
   }
   return result;
 }
+
+function isPossessedByAccount(accountId, borrow) {
+  return borrow.id === accountId && !borrow.returned;
+}
+
+function getBookWithAuthor(book, authors) {
+  const author = authors.find(author => author.id === book.authorId);
+  return {...book, author};
+}
+
 
 
 module.exports = {
